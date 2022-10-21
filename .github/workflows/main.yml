@@ -6,7 +6,7 @@ name: CI-CD
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -19,41 +19,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      
-      
+      - uses: actions/checkout@v3.0.1
+
       - name: Autenticando o usuário no Docker
-        uses: docker/login-action@v2.0.0
+        uses: docker/@v2.1.0
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PWD }}
-          
+
       - name: Construindo a imagem e enviando para o Docker Hub
-        uses: docker/build-push-action@v3.1.1
+        uses: docker/build-push-action@v3.2.0
         with:
           file: ./src/Dockerfile
           context: ./src
           push: true
           tags: |
-            nadilson/kube-news:latest
+            nadilson/kube-news:v8
             nadilson/kube-news:${{ github.run_number }}
-            
+
   CD:
     needs: [CI]
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3      
+      - uses: actions/checkout@v3.0.1
       - name: Definindo o Kube config
         uses: Azure/k8s-set-context@v3.0
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.K8S_CONFIG }}
-          
+
       - name: Efetuando o deploy no ambiente de teste
-        uses: Azure/k8s-deploy@v4.3
+        uses: Azure/k8s-deploy@v4.5
         with:
           images: nadilson/kube-news:${{ github.run_number }}
           manifests: |
             k8s/deployment.yaml
-    

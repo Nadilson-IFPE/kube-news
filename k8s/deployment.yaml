@@ -54,7 +54,7 @@ spec:
     spec:
       containers:
         - name: nadkubenews
-          image: nadilson/kube-news:v2
+          image: nadilson/kube-news:{{TAG}}
           env:
             - name: DB_DATABASE
               value: "nadkubenews"
